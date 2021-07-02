@@ -74,25 +74,25 @@
   _parseTSPacket(data,start) {
     var stt,pid,atf,offset;
     if(data[start] === 0x47) {
-      stt = !!(data[start+1] & 0x40);
+      stt = !!(data[start+1] & 0x40); // payload_unit_start_indicator
       // pid is a 13-bit field starting at the last bit of TS[1]
-      pid = ((data[start+1] & 0x1f) << 8) + data[start+2];
-      atf = (data[start+3] & 0x30) >> 4;
+      pid = ((data[start+1] & 0x1f) << 8) + data[start+2]; // pid
+      atf = (data[start+3] & 0x30) >> 4; // adaptation_field_control
       // if an adaption field is present, its length is specified by the fifth byte of the TS packet header.
       if(atf > 1) {
-        offset = start+5+data[start+4];
+        offset = start+5+data[start+4]; // 跳过 adaptation_field
         // return if there is only adaptation field
         if(offset === (start+188)) {
           return;
         }
-      } else {
+      } else { // 无自适应域
         offset = start+4;
       }
       if(this.pmtParsed) {
         if(pid === this._avcId) {
           if(stt) {
             if(this._avcData) {
-              this._parseAVCPES(this._parsePES(this._avcData));
+              this._parseAVCPES(this._parsePES(this._avcData)); // 解析上一个 stream data
             }
             this._avcData = {data: [],size: 0};
           }
@@ -133,7 +133,7 @@
   _parsePMT(data,offset) {
     var sectionLength,tableEnd,programInfoLength,pid;
     sectionLength = (data[offset+1] & 0x0f) << 8 | data[offset+2];
-    tableEnd = offset + 3 + sectionLength - 4;
+    tableEnd = offset + 3 + sectionLength - 4; // minus CRC_32
     // to determine where the table is, we have to figure out how
     // long the program info descriptors are
     programInfoLength = (data[offset+10] & 0x0f) << 8 | data[offset+11];
@@ -172,8 +172,8 @@
     pesPrefix = (frag[0] << 16) + (frag[1] << 8) + frag[2];
     if(pesPrefix === 1) {
       pesLen = (frag[4] << 8) + frag[5];
-      pesFlags = frag[7];
-      if (pesFlags & 0xC0) {
+      pesFlags = frag[7]; // PTS_DTS_flags 2, ESCR_flag 1, ES_rate_flag 1, DSM_trick_mode_flag 1, additional_copy_info_flag 1, PES_CRC_flag 1, PES_extension_flag 1
+      if (pesFlags & 0xC0) { // 0b11|00|00|00 // has PTS_DTS_flags
         // PES header described here : http://dvd.sourceforge.net/dvdinfo/pes-hdr.html
         pesPts = (frag[9] & 0x0E) << 28
           | (frag[10] & 0xFF) << 21
@@ -181,7 +181,7 @@
           | (frag[12] & 0xFF) <<  6
           | (frag[13] & 0xFE) >>>  2;
         pesPts /= 45;
-        if (pesFlags & 0x40) {
+        if (pesFlags & 0x40) { // 0b01|00|00|00 // PTS_DTS_flags == '11'
           pesDts = (frag[14] & 0x0E ) << 28
             | (frag[15] & 0xFF ) << 21
             | (frag[16] & 0xFE ) << 13

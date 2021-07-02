@@ -140,7 +140,7 @@
         }
         var bufferInfo = this.bufferInfo(pos), bufferLen = bufferInfo.len, bufferEnd = bufferInfo.end;
         // compute max Buffer Length that we could get from this load level, based on level bitrate. don't buffer more than 60 MB and more than 30s
-        var maxBufLen = Math.min(8*60*1000*1000/this.levels[loadLevel].bitrate,30);
+        var maxBufLen = Math.min(8*60*1000*1000/this.levels[loadLevel].bitrate,30) || 30;
         // if buffer length is less than maxBufLen try to load a new fragment
         if(bufferLen < maxBufLen) {
           if(loadLevel !== this.level) {
@@ -309,7 +309,7 @@
     var fragments = data.details.fragments,duration = data.details.totalduration;
     logger.log('level ' + data.levelId + ' loaded [' + fragments[0].sn + ',' + fragments[fragments.length-1].sn + '],duration:' + duration);
 
-    var level = this.levels[data.levelId],sliding = 0, levelCurrent = this.levels[this.level];
+    var level = this.levels[data.levelId || 0],sliding = 0, levelCurrent = this.levels[this.level];
     // check if playlist is already loaded (if yes, it should be a live playlist)
     if(levelCurrent && levelCurrent.details && levelCurrent.details.live) {
       //  playlist sliding is the sum of : current playlist sliding + sliding of new playlist compared to current one

@@ -6,6 +6,10 @@
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+<script
+  src="https://code.jquery.com/jquery-3.6.0.js"
+  integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+  crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
 <body>
@@ -28,7 +32,7 @@
           <div id="customButtons"></div>
           <pre id='HlsUrl'></pre>
           <pre id='HlsStatus'></pre>
-          <video id=video controls autoplay border="4"></video>
+          <video id=video controls autoplay muted width="640" border="4"></video>
           <canvas id="buffered_c" width="640" height="15" onclick="buffered_seek(event)";></canvas> <br>
           <div id='buttons'>
             <button type="button" class="btn btn-sm btn-success" onclick="document.getElementById('video').play()">play()</button>
@@ -47,7 +51,7 @@
     </div>
     <!-- #main -->
     <br>
-    <h3 class="title">real time metrics</h1>
+    <h3 class="title">real time metrics</h3>
     <button type="button" class="btn btn-xs btn-primary" onclick="windowSliding=!windowSliding; refreshCanvas()">toggle sliding/fixed window</button><br>
     <button type="button" class="btn btn-xs btn-primary" onclick="timeRangeSetSliding(0)">window ALL</button>
     <button type="button" class="btn btn-xs btn-primary" onclick="timeRangeSetSliding(2000)">2s</button>
@@ -74,13 +78,13 @@
   <div id="buffered_log"></div>
 
 <br>Change Stream <br>
-<input id="userInput" value="http://www.streambox.fr/playlists/test_001/stream.m3u8" size="80"> <button type="button" class="btn btn-sm btn-primary" onclick="changeStream()">Load</button><br>
+<input id="userInput" value="https://hls-3954.liveplay.myqcloud.com/live/3954_616289265_4000.m3u8?bizid=3954&txSecret=38bfb9ad384f1f89042fc222061d64ac&txTime=60d1a535&uid=317052768&fromdj=egame_official&_qedj_t=BhgPgxLTGUAINGkzO15Xr1T64mquincf5pgQASYUNjE2Mjg5MjY1XzE2MjMyMjg3OTcyYMrv6EIS5ddgVhxYQS01QzRVS0FBQThxaktUOE1RRkFMLW1Wd0poZg5lZ2FtZV9vZmZpY2lhbHAEhitwZ2dfbGl2ZV9yZWFkX2lmY19tdF9zdnIuZW50cnlfaDVfbGl2ZV9yb29tlgc5LjkuOS45pg0xMTMuMTA4Ljc3LjYzsQ%2BgxgDWAOzwDwI%3D&src_from=egame_pc&_t=1623912425043" size="80"> <button type="button" class="btn btn-sm btn-primary" onclick="changeStream()">Load</button><br>
 
 <h3> Test Videos </h3>
 <ul id="streamlist"></ul>
 
 
-  <script src="../../streams.js"></script>
+<!--  <script src="../../streams.js"></script>-->
 
   <script>
   function changeStream() {
@@ -106,7 +110,11 @@
    video.volume = 0.05;
    var manifest = decodeURIComponent(location.search.split('src=')[1]);
    if(manifest === 'undefined') {
-     manifest = 'http://www.streambox.fr/playlists/test_001/stream.m3u8';
+     if (location.search.indexOf('vod') > 0) {
+       manifest = 'https://test-streams.mux.dev/x36xhzz/url_6/193039199_mp4_h264_aac_hq_7.m3u8';
+     } else {
+       manifest = 'https://hls-3954.liveplay.myqcloud.com/live/3954_616289265_4000.m3u8?bizid=3954&txSecret=38bfb9ad384f1f89042fc222061d64ac&txTime=60d1a535&uid=317052768&fromdj=egame_official&_qedj_t=BhgPgxLTGUAINGkzO15Xr1T64mquincf5pgQASYUNjE2Mjg5MjY1XzE2MjMyMjg3OTcyYMrv6EIS5ddgVhxYQS01QzRVS0FBQThxaktUOE1RRkFMLW1Wd0poZg5lZ2FtZV9vZmZpY2lhbHAEhitwZ2dfbGl2ZV9yZWFkX2lmY19tdF9zdnIuZW50cnlfaDVfbGl2ZV9yb29tlgc5LjkuOS45pg0xMTMuMTA4Ljc3LjYzsQ%2BgxgDWAOzwDwI%3D&src_from=egame_pc&_t=1623912425043';
+     }
    }
 
   loadStream(manifest);

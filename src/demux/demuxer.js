@@ -8,7 +8,7 @@
 class Demuxer {
 
   constructor() {
-    var enableWorker = true;
+    var enableWorker = false;
     if(enableWorker && (typeof(Worker) !== 'undefined')) {
       logger.log('TS demuxing in webworker');
       var work = require('webworkify');
